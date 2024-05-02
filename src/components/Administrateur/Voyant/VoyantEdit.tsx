@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from "react";
-import { addVoyant } from "../../../actions/Voyant/action";
+import Voyant from "../../../@types/Voyant";
+import { editVoyant } from "../../../actions/Voyant/action";
 import {
   Button,
   Form,
@@ -12,26 +13,27 @@ import {
   ModalHeader,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPen } from "@fortawesome/free-solid-svg-icons";
 
 const fields = [
   { key: "Ramassage", name: "Ramassage" },
   { key: "Depart", name: "Depart" },
 ];
 
-interface VoyantAddPropsType {
+interface VoyantEditPropsType {
+  voyant: Voyant;
   refresh: () => void;
 }
-const VoyantAdd = (props: VoyantAddPropsType) => {
+
+const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
   const [isOpened, setIsOpened] = useState<boolean>(false);
 
-  // form states
-  const [nom, setNom] = useState<string>("");
-  const [planing, setPlaning] = useState<string>("");
-  const [heure, setHeure] = useState<string>("");
-  const [chauffeur, setChauffeur] = useState<string>("");
-  const [destination, setDestination] = useState<string>("");
-  const [situation, setSituation] = useState<string>(fields[0].key);
+  const [nom, setNom] = useState<string>(voyant.nom);
+  const [planing, setPlaning] = useState<string>(voyant.planing);
+  const [heure, setHeure] = useState<string>(voyant.heure);
+  const [chauffeur, setChauffeur] = useState<string>(voyant.chauffeur);
+  const [destination, setDestination] = useState<string>(voyant.destination);
+  const [situation, setSituation] = useState<string>(voyant.situation);
 
   const handleNomChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNom(event.target.value);
@@ -51,6 +53,7 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
 
   const submit = () => {
     const newVoyant = {
+      _id: voyant._id,
       nom,
       planing,
       heure,
@@ -58,26 +61,26 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
       destination,
       situation,
     };
-    addVoyant(newVoyant, () => {
-      props.refresh();
+    editVoyant(newVoyant, () => {
+      refresh();
       setIsOpened(false);
-      reset();
+      reset(newVoyant);
     });
   };
 
-  const reset = () => {
-    setNom("");
-    setPlaning("");
-    setHeure("");
-    setChauffeur("");
-    setDestination("");
-    setSituation(fields[0].key);
+  const reset = (voyant: Voyant) => {
+    setNom(voyant.nom);
+    setPlaning(voyant.planing);
+    setHeure(voyant.heure);
+    setChauffeur(voyant.chauffeur);
+    setDestination(voyant.destination);
+    setSituation(voyant.situation);
   };
 
   return (
     <>
       <span onClick={() => setIsOpened(true)} style={{ cursor: "pointer" }}>
-        <FontAwesomeIcon icon={faPlus} size="2xl" color="green" />
+        <FontAwesomeIcon icon={faPen} size="2xl" color="green" />
       </span>
       <Modal
         centered
@@ -86,7 +89,7 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
         toggle={() => setIsOpened(!isOpened)}
       >
         <ModalHeader toggle={() => setIsOpened(!isOpened)}>
-          <span>Ajouter Voyant</span>
+          <span>Modification Etat de Voyant</span>
         </ModalHeader>
         <ModalBody>
           <Form>
@@ -182,4 +185,4 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
     </>
   );
 };
-export default VoyantAdd;
+export default VoyantEdit;

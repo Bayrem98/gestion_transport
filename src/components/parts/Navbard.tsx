@@ -21,8 +21,10 @@ const Navbard = () => {
   return (
     <>
       <div className="">
-        <Navbar>
-          <NavbarBrand href="/">Gestion Transport</NavbarBrand>
+        <Navbar color="dark">
+          <NavbarBrand href="/" style={{ color: "white" }}>
+            Gestion Transport
+          </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={isOpen} navbar>
             <Nav className="me-auto" navbar>

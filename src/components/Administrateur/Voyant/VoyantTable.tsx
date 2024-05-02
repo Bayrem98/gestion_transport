@@ -6,6 +6,7 @@ import VoyantAdd from "./VoyantAdd";
 import VoyantDelete from "./VoyantDelete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
+import VoyantEdit from "./VoyantEdit";
 
 interface Props {}
 
@@ -18,12 +19,13 @@ const VoyantsTable = (props: Props) => {
   }, []);
 
   return (
-    <div className="background-app">
+    <div>
       <div
         className="d-flex justify-content-between"
         style={{ paddingTop: 80, paddingLeft: 25, paddingRight: 25 }}
       >
-        <h3 style={{ color: "white" }}>Tableau des Voyants</h3>
+        <h3 style={{ color: "black" }}>Tableau des Voyants</h3>
+        <p>Date: 01/05/2024</p>
         <div className="">
           <Input
             type="text"
@@ -40,6 +42,7 @@ const VoyantsTable = (props: Props) => {
           <thead>
             <tr>
               <th>Nom</th>
+              <th>Situation</th>
               <th>Planning</th>
               <th>Heure</th>
               <th>Chauffeur</th>
@@ -56,12 +59,17 @@ const VoyantsTable = (props: Props) => {
                 .map((voyant) => (
                   <tr key={voyant._id}>
                     <td>{voyant.nom}</td>
+                    <td>{voyant.situation}</td>
                     <td>{voyant.planing}</td>
                     <td>{voyant.heure}</td>
                     <td>{voyant.chauffeur}</td>
                     <td>{voyant.destination}</td>
                     <td style={{ textAlign: "center" }}>
                       <ButtonGroup>
+                        <VoyantEdit
+                          voyant={voyant}
+                          refresh={() => getVoyants(null, setVoyants)}
+                        />
                         <VoyantDelete
                           voyant={voyant}
                           refresh={() => getVoyants(null, setVoyants)}
@@ -72,7 +80,7 @@ const VoyantsTable = (props: Props) => {
                 ))
             ) : (
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={7} className="text-center">
                   <FontAwesomeIcon icon={faBoxOpen} size="4x" />
                   <br />
                   Pas des données...

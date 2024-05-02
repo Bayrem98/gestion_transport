@@ -5,4 +5,5 @@ export default interface Voyant {
   heure: string;
   chauffeur: string;
   destination: string;
+  situation: string;
 }
