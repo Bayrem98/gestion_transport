@@ -15,8 +15,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const fields = [
-  { key: "Ramassage", name: "Ramassage" },
-  { key: "Depart", name: "Depart" },
+  { key: "Astragale", name: "Astragale" },
+  { key: "Hannibal", name: "Hannibal" },
+  { key: "Phoning", name: "Phoning" },
+  { key: "Ulysse", name: "Ulysse" },
+  { key: "Pénélope", name: "Pénélope" },
 ];
 
 interface VoyantAddPropsType {
@@ -29,9 +32,9 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
   const [nom, setNom] = useState<string>("");
   const [planing, setPlaning] = useState<string>("");
   const [heure, setHeure] = useState<string>("");
-  const [chauffeur, setChauffeur] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
-  const [situation, setSituation] = useState<string>(fields[0].key);
+  const [plateau, setPlateau] = useState<string>(fields[0].key);
+  const [num_tel, setNum_tel] = useState<string>("");
 
   const handleNomChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNom(event.target.value);
@@ -43,7 +46,7 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
     setHeure(event.target.value);
   };
   const handleChauffeurChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChauffeur(event.target.value);
+    setNum_tel(event.target.value);
   };
   const handleDestinationChange = (event: ChangeEvent<HTMLInputElement>) => {
     setDestination(event.target.value);
@@ -54,9 +57,9 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
       nom,
       planing,
       heure,
-      chauffeur,
       destination,
-      situation,
+      plateau,
+      num_tel,
     };
     addVoyant(newVoyant, () => {
       props.refresh();
@@ -69,9 +72,9 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
     setNom("");
     setPlaning("");
     setHeure("");
-    setChauffeur("");
+    setNum_tel("");
     setDestination("");
-    setSituation(fields[0].key);
+    setPlateau(fields[0].key);
   };
 
   return (
@@ -119,15 +122,6 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
               />
             </FormGroup>
             <FormGroup>
-              <Label for="chauffeur">Chauffeur</Label>
-              <Input
-                value={chauffeur}
-                id="chauffeur"
-                name="chauffeur"
-                onChange={handleChauffeurChange}
-              />
-            </FormGroup>
-            <FormGroup>
               <Label for="destination">Destination</Label>
               <Input
                 value={destination}
@@ -137,13 +131,13 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
               />
             </FormGroup>
             <FormGroup>
-              <Label for="situation">Situation</Label>
+              <Label for="plateau">Plateau</Label>
               <Input
-                value={situation}
-                id="situation"
-                name="situation"
+                value={plateau}
+                id="plateau"
+                name="plateau"
                 type="select"
-                onChange={(e) => setSituation(e.target.value)}
+                onChange={(e) => setPlateau(e.target.value)}
               >
                 {fields.map((f) => (
                   <option key={f.key} value={f.key}>
@@ -151,6 +145,15 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
                   </option>
                 ))}
               </Input>
+            </FormGroup>
+            <FormGroup>
+              <Label for="num_tel">Num-Tel</Label>
+              <Input
+                value={num_tel}
+                id="num_tel"
+                name="num_tel"
+                onChange={handleChauffeurChange}
+              />
             </FormGroup>
           </Form>
         </ModalBody>

@@ -59,10 +59,10 @@ const VoyantsTable = (props: Props) => {
                 .map((voyant) => (
                   <tr key={voyant._id}>
                     <td>{voyant.nom}</td>
-                    <td>{voyant.situation}</td>
+                    <td>{voyant.plateau}</td>
                     <td>{voyant.planing}</td>
                     <td>{voyant.heure}</td>
-                    <td>{voyant.chauffeur}</td>
+                    <td>{voyant.num_tel}</td>
                     <td>{voyant.destination}</td>
                     <td style={{ textAlign: "center" }}>
                       <ButtonGroup>

@@ -16,8 +16,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 
 const fields = [
-  { key: "Ramassage", name: "Ramassage" },
-  { key: "Depart", name: "Depart" },
+  { key: "Astragale", name: "Astragale" },
+  { key: "Hannibal", name: "Hannibal" },
+  { key: "Phoning", name: "Phoning" },
+  { key: "Ulysse", name: "Ulysse" },
+  { key: "Pénélope", name: "Pénélope" },
 ];
 
 interface VoyantEditPropsType {
@@ -31,9 +34,9 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
   const [nom, setNom] = useState<string>(voyant.nom);
   const [planing, setPlaning] = useState<string>(voyant.planing);
   const [heure, setHeure] = useState<string>(voyant.heure);
-  const [chauffeur, setChauffeur] = useState<string>(voyant.chauffeur);
   const [destination, setDestination] = useState<string>(voyant.destination);
-  const [situation, setSituation] = useState<string>(voyant.situation);
+  const [plateau, setPlateau] = useState<string>(voyant.plateau);
+  const [num_tel, setNum_tel] = useState<string>(voyant.num_tel);
 
   const handleNomChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNom(event.target.value);
@@ -45,7 +48,7 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
     setHeure(event.target.value);
   };
   const handleChauffeurChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setChauffeur(event.target.value);
+    setNum_tel(event.target.value);
   };
   const handleDestinationChange = (event: ChangeEvent<HTMLInputElement>) => {
     setDestination(event.target.value);
@@ -57,9 +60,9 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
       nom,
       planing,
       heure,
-      chauffeur,
       destination,
-      situation,
+      plateau,
+      num_tel,
     };
     editVoyant(newVoyant, () => {
       refresh();
@@ -72,9 +75,9 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
     setNom(voyant.nom);
     setPlaning(voyant.planing);
     setHeure(voyant.heure);
-    setChauffeur(voyant.chauffeur);
+    setNum_tel(voyant.num_tel);
     setDestination(voyant.destination);
-    setSituation(voyant.situation);
+    setPlateau(voyant.plateau);
   };
 
   return (
@@ -122,15 +125,6 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
               />
             </FormGroup>
             <FormGroup>
-              <Label for="chauffeur">Chauffeur</Label>
-              <Input
-                value={chauffeur}
-                id="chauffeur"
-                name="chauffeur"
-                onChange={handleChauffeurChange}
-              />
-            </FormGroup>
-            <FormGroup>
               <Label for="destination">Destination</Label>
               <Input
                 value={destination}
@@ -140,13 +134,13 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
               />
             </FormGroup>
             <FormGroup>
-              <Label for="situation">Situation</Label>
+              <Label for="plateau">Plateau</Label>
               <Input
-                value={situation}
-                id="situation"
-                name="situation"
+                value={plateau}
+                id="plateau"
+                name="plateau"
                 type="select"
-                onChange={(e) => setSituation(e.target.value)}
+                onChange={(e) => setPlateau(e.target.value)}
               >
                 {fields.map((f) => (
                   <option key={f.key} value={f.key}>
@@ -154,6 +148,15 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
                   </option>
                 ))}
               </Input>
+            </FormGroup>
+            <FormGroup>
+              <Label for="num_tel">Num-Tel</Label>
+              <Input
+                value={num_tel}
+                id="num_tel"
+                name="num_tel"
+                onChange={handleChauffeurChange}
+              />
             </FormGroup>
           </Form>
         </ModalBody>

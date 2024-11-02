@@ -3,7 +3,7 @@ export default interface Voyant {
   nom: string;
   planing: string;
   heure: string;
-  chauffeur: string;
   destination: string;
-  situation: string;
+  plateau: string;
+  num_tel: string;
 }
