@@ -1,6 +1,7 @@
 import axios from "axios";
 import Voyant from "../../@types/Voyant";
 
+
 export function getVoyants(
   query: {
     nom?: string;

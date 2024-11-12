@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { ButtonGroup, Input, Table } from "reactstrap";
-import Voyant from "../../../@types/Voyant";
 import { getVoyants } from "../../../actions/Voyant/action";
 import VoyantAdd from "./VoyantAdd";
 import VoyantDelete from "./VoyantDelete";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
 import VoyantEdit from "./VoyantEdit";
+import Voyant from "../../../@types/Voyant";
 
 interface Props {}
 
@@ -24,8 +24,7 @@ const VoyantsTable = (props: Props) => {
         className="d-flex justify-content-between"
         style={{ paddingTop: 80, paddingLeft: 25, paddingRight: 25 }}
       >
-        <h3 style={{ color: "black" }}>Tableau des Voyants</h3>
-        <p>Date: 01/05/2024</p>
+        <h3 style={{ color: "black" }}>Tableau des Salaries</h3>
         <div className="">
           <Input
             type="text"
@@ -41,29 +40,34 @@ const VoyantsTable = (props: Props) => {
         <Table bordered responsive hover>
           <thead>
             <tr>
-              <th>Nom</th>
-              <th>Situation</th>
+              <th>Salarie</th>
               <th>Planning</th>
-              <th>Heure</th>
-              <th>Chauffeur</th>
               <th>Destination</th>
+              <th>Plateau</th>
+              <th>Num-Tel</th>
               <th style={{ textAlign: "center" }}>Action</th>
             </tr>
           </thead>
           <tbody>
             {voyants.length ? (
               voyants
-                .filter((voyant) =>
-                  voyant.nom.toLowerCase().includes(filter.toLowerCase())
+                .filter(
+                  (voyant) =>
+                    voyant.nom.toLowerCase().includes(filter.toLowerCase()) ||
+                    voyant.plateau
+                      .toLowerCase()
+                      .includes(filter.toLowerCase()) ||
+                    voyant.destination
+                      .toLowerCase()
+                      .includes(filter.toLowerCase())
                 )
                 .map((voyant) => (
                   <tr key={voyant._id}>
                     <td>{voyant.nom}</td>
-                    <td>{voyant.plateau}</td>
                     <td>{voyant.planing}</td>
-                    <td>{voyant.heure}</td>
-                    <td>{voyant.num_tel}</td>
                     <td>{voyant.destination}</td>
+                    <td>{voyant.plateau}</td>
+                    <td>{voyant.num_tel}</td>
                     <td style={{ textAlign: "center" }}>
                       <ButtonGroup>
                         <VoyantEdit

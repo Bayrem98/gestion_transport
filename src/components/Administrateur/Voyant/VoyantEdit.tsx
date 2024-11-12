@@ -33,7 +33,7 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
 
   const [nom, setNom] = useState<string>(voyant.nom);
   const [planing, setPlaning] = useState<string>(voyant.planing);
-  const [heure, setHeure] = useState<string>(voyant.heure);
+  
   const [destination, setDestination] = useState<string>(voyant.destination);
   const [plateau, setPlateau] = useState<string>(voyant.plateau);
   const [num_tel, setNum_tel] = useState<string>(voyant.num_tel);
@@ -44,9 +44,7 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
   const handlePlaningChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPlaning(event.target.value);
   };
-  const handleHeureChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setHeure(event.target.value);
-  };
+ 
   const handleChauffeurChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNum_tel(event.target.value);
   };
@@ -59,7 +57,7 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
       _id: voyant._id,
       nom,
       planing,
-      heure,
+      
       destination,
       plateau,
       num_tel,
@@ -74,7 +72,7 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
   const reset = (voyant: Voyant) => {
     setNom(voyant.nom);
     setPlaning(voyant.planing);
-    setHeure(voyant.heure);
+    
     setNum_tel(voyant.num_tel);
     setDestination(voyant.destination);
     setPlateau(voyant.plateau);
@@ -82,8 +80,11 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
 
   return (
     <>
-      <span onClick={() => setIsOpened(true)} style={{ cursor: "pointer" }}>
-        <FontAwesomeIcon icon={faPen} size="2xl" color="green" />
+      <span
+        onClick={() => setIsOpened(true)}
+        style={{ cursor: "pointer", marginRight: 20 }}
+      >
+        <FontAwesomeIcon icon={faPen} size="2xl" color="blue" />
       </span>
       <Modal
         centered
@@ -115,15 +116,7 @@ const VoyantEdit = ({ voyant, refresh }: VoyantEditPropsType) => {
                 onChange={handlePlaningChange}
               />
             </FormGroup>
-            <FormGroup>
-              <Label for="heure">Heure</Label>
-              <Input
-                value={heure}
-                id="heure"
-                name="heure"
-                onChange={handleHeureChange}
-              />
-            </FormGroup>
+            
             <FormGroup>
               <Label for="destination">Destination</Label>
               <Input

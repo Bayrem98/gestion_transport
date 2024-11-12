@@ -31,7 +31,6 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
   // form states
   const [nom, setNom] = useState<string>("");
   const [planing, setPlaning] = useState<string>("");
-  const [heure, setHeure] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
   const [plateau, setPlateau] = useState<string>(fields[0].key);
   const [num_tel, setNum_tel] = useState<string>("");
@@ -41,9 +40,6 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
   };
   const handlePlaningChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPlaning(event.target.value);
-  };
-  const handleHeureChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setHeure(event.target.value);
   };
   const handleChauffeurChange = (event: ChangeEvent<HTMLInputElement>) => {
     setNum_tel(event.target.value);
@@ -56,7 +52,6 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
     const newVoyant = {
       nom,
       planing,
-      heure,
       destination,
       plateau,
       num_tel,
@@ -71,7 +66,6 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
   const reset = () => {
     setNom("");
     setPlaning("");
-    setHeure("");
     setNum_tel("");
     setDestination("");
     setPlateau(fields[0].key);
@@ -110,15 +104,6 @@ const VoyantAdd = (props: VoyantAddPropsType) => {
                 id="planing"
                 name="planing"
                 onChange={handlePlaningChange}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="heure">Heure</Label>
-              <Input
-                value={heure}
-                id="heure"
-                name="heure"
-                onChange={handleHeureChange}
               />
             </FormGroup>
             <FormGroup>
