@@ -10,7 +10,7 @@ export function getVoyants(
   callback: (data: Voyant[]) => void
 ) {
   axios
-    .get(`http://localhost:3003/voyant`, {
+    .get(`${process.env.REACT_APP_API_URL}/voyant`, {
       params: query,
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -26,7 +26,7 @@ export function getVoyants(
 
 export function getVoyant(id: string, callback: (data: Voyant) => void) {
   axios
-    .get(`http://localhost:3003/voyant/` + id, {
+    .get(`${process.env.REACT_APP_API_URL}/voyant` + id, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
       },
@@ -41,7 +41,7 @@ export function getVoyant(id: string, callback: (data: Voyant) => void) {
 
 export function addVoyant(voyant: Voyant, callback: () => void) {
   axios
-    .post(`http://localhost:3003/voyant`, voyant)
+    .post(`${process.env.REACT_APP_API_URL}/voyant`, voyant)
     .then(() => {
       callback();
     })
@@ -52,7 +52,7 @@ export function addVoyant(voyant: Voyant, callback: () => void) {
 
 export function editVoyant(voyant: Voyant, callback: () => void) {
   axios
-    .put(`http://localhost:3003/voyant/${voyant._id}`, voyant)
+    .put(`${process.env.REACT_APP_API_URL}/voyant/${voyant._id}`, voyant)
     .then(() => {
       callback();
     })
@@ -63,7 +63,7 @@ export function editVoyant(voyant: Voyant, callback: () => void) {
 
 export function deleteVoyant(voyant: Voyant, callback: () => void) {
   axios
-    .delete(`http://localhost:3003/voyant/${voyant._id}`)
+    .delete(`${process.env.REACT_APP_API_URL}/voyant/${voyant._id}`)
     .then(() => {
       callback();
     })
