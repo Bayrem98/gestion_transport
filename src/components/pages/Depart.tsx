@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Button, ButtonGroup, Table, Input } from "reactstrap";
+import { Button, ButtonGroup, Table, Input, Alert } from "reactstrap";
 import Voyant from "../../@types/Voyant";
 import { getVoyants } from "../../actions/Voyant/action";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBoxOpen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faTrash, faSave } from "@fortawesome/free-solid-svg-icons";
 
 const fields1 = [
   { key: "22H", name: "22H" },
@@ -28,16 +28,17 @@ interface Props {}
 
 const Depart = (props: Props) => {
   const [voyants, setVoyants] = useState<Voyant[]>([]);
-  const [selectedVoyants, setSelectedVoyants] = useState<
-    Record<number, string>
-  >({});
+  const [selectedVoyants, setSelectedVoyants] = useState<Record<number, string>>({});
+  const [selectedHeures, setSelectedHeures] = useState<Record<number, string>>({});
+  const [selectedChauffeurs, setSelectedChauffeurs] = useState<Record<number, string>>({});
   const [rows, setRows] = useState<number[]>([]);
   const [currentDate, setCurrentDate] = useState<string>("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [isError, setIsError] = useState<boolean>(false);
 
   useEffect(() => {
     getVoyants(null, setVoyants);
 
-    // Obtenir la date actuelle et la formater
     const today = new Date();
     const formattedDate = today.toLocaleDateString("fr-FR", {
       year: "numeric",
@@ -47,12 +48,10 @@ const Depart = (props: Props) => {
     setCurrentDate(formattedDate);
   }, []);
 
-  // Ajouter une nouvelle ligne au tableau
   const addRow = () => {
     setRows((prevRows) => [...prevRows, prevRows.length]);
   };
 
-  // Supprimer une ligne du tableau
   const deleteRow = (index: number) => {
     setRows((prevRows) => prevRows.filter((rowIndex) => rowIndex !== index));
     setSelectedVoyants((prev) => {
@@ -60,11 +59,90 @@ const Depart = (props: Props) => {
       delete updated[index];
       return updated;
     });
+    setSelectedHeures((prev) => {
+      const updated = { ...prev };
+      delete updated[index];
+      return updated;
+    });
+    setSelectedChauffeurs((prev) => {
+      const updated = { ...prev };
+      delete updated[index];
+      return updated;
+    });
   };
 
-  // Mettre à jour le voyant sélectionné pour une ligne spécifique
   const handleSelectChange = (index: number, voyantNom: string) => {
     setSelectedVoyants((prev) => ({ ...prev, [index]: voyantNom }));
+  };
+
+  const handleHeureChange = (index: number, heure: string) => {
+    setSelectedHeures((prev) => ({ ...prev, [index]: heure }));
+  };
+
+  const handleChauffeurChange = (index: number, chauffeur: string) => {
+    setSelectedChauffeurs((prev) => ({ ...prev, [index]: chauffeur }));
+  };
+
+  const handleSubmit = async () => {
+    if (rows.length === 0) {
+      setMessage("Le tableau est vide. Ajoutez des données avant de soumettre.");
+      setIsError(true);
+      return;
+    }
+
+    try {
+      // Vérifier que toutes les lignes ont un voyant sélectionné
+      for (const index of rows) {
+        if (!selectedVoyants[index]) {
+          throw new Error(`Veuillez sélectionner un voyant pour la ligne ${index + 1}`);
+        }
+      }
+
+      const dataToSend = {
+        lignes: rows.map((index) => {
+          const voyantNom = selectedVoyants[index];
+          const voyantData = voyants.find((v) => v.nom === voyantNom);
+
+          return {
+            salarie: voyantNom,
+            planning: voyantData?.planing || "-",
+            heure: selectedHeures[index] || fields1[0].key, // Valeur par défaut première heure
+            chauffeur: selectedChauffeurs[index] || fields2[0].key, // Valeur par défaut premier chauffeur
+            destination: voyantData?.destination || "-",
+            plateau: voyantData?.plateau || "-",
+            num_tel: voyantData?.num_tel || "-",
+          };
+        }),
+        date: currentDate,
+      };
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/departements`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Si vous avez besoin d'authentification :
+          // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de l'enregistrement");
+      }
+
+      setMessage("Les données ont été enregistrées avec succès !");
+      setIsError(false);
+      
+      // Optionnel: Réinitialiser le formulaire après envoi
+      // setRows([]);
+      // setSelectedVoyants({});
+      // setSelectedHeures({});
+      // setSelectedChauffeurs({});
+    } catch (error: any) {
+      setMessage(error.message || "Une erreur est survenue");
+      setIsError(true);
+    }
   };
 
   return (
@@ -73,14 +151,28 @@ const Depart = (props: Props) => {
         <p style={{ textAlign: "center", fontSize: 30 }}>
           Départ <span>{currentDate}</span>
         </p>
-        {/* Bouton pour ajouter une nouvelle ligne */}
-        <Button
-          color="primary"
-          onClick={addRow}
-          style={{ marginBottom: "20px", marginLeft: 20 }}
-        >
-          Ajouter une ligne
-        </Button>
+        {message && (
+          <Alert color={isError ? "danger" : "success"} style={{ margin: 20 }}>
+            {message}
+          </Alert>
+        )}
+        <div style={{ display: "flex", marginLeft: 20, marginBottom: 20 }}>
+          <Button
+            color="primary"
+            onClick={addRow}
+            style={{ marginRight: 10 }}
+          >
+            Ajouter une ligne
+          </Button>
+          <Button
+            color="success"
+            onClick={handleSubmit}
+            style={{ marginRight: 10 }}
+          >
+            <FontAwesomeIcon icon={faSave} style={{ marginRight: 5 }} />
+            Enregistrer
+          </Button>
+        </div>
         <div className="" style={{ marginLeft: 20, marginRight: 20 }}>
           <Table bordered responsive hover>
             <thead>
@@ -110,6 +202,7 @@ const Depart = (props: Props) => {
                           onChange={(e) =>
                             handleSelectChange(index, e.target.value)
                           }
+                          required
                         >
                           <option value="">Sélectionner un voyant</option>
                           {voyants.map((voyant) => (
@@ -122,7 +215,11 @@ const Depart = (props: Props) => {
 
                       <td>{voyantData?.planing || "-"}</td>
                       <td>
-                        <Input type="select">
+                        <Input 
+                          type="select"
+                          onChange={(e) => handleHeureChange(index, e.target.value)}
+                          value={selectedHeures[index] || fields1[0].key}
+                        >
                           {fields1.map((f) => (
                             <option key={f.key} value={f.key}>
                               {f.name}
@@ -131,7 +228,11 @@ const Depart = (props: Props) => {
                         </Input>
                       </td>
                       <td>
-                        <Input type="select">
+                        <Input 
+                          type="select"
+                          onChange={(e) => handleChauffeurChange(index, e.target.value)}
+                          value={selectedChauffeurs[index] || fields2[0].key}
+                        >
                           {fields2.map((f) => (
                             <option key={f.key} value={f.key}>
                               {f.name}
