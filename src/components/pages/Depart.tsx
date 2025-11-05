@@ -28,9 +28,15 @@ interface Props {}
 
 const Depart = (props: Props) => {
   const [voyants, setVoyants] = useState<Voyant[]>([]);
-  const [selectedVoyants, setSelectedVoyants] = useState<Record<number, string>>({});
-  const [selectedHeures, setSelectedHeures] = useState<Record<number, string>>({});
-  const [selectedChauffeurs, setSelectedChauffeurs] = useState<Record<number, string>>({});
+  const [selectedVoyants, setSelectedVoyants] = useState<
+    Record<number, string>
+  >({});
+  const [selectedHeures, setSelectedHeures] = useState<Record<number, string>>(
+    {}
+  );
+  const [selectedChauffeurs, setSelectedChauffeurs] = useState<
+    Record<number, string>
+  >({});
   const [rows, setRows] = useState<number[]>([]);
   const [currentDate, setCurrentDate] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
@@ -40,11 +46,7 @@ const Depart = (props: Props) => {
     getVoyants(null, setVoyants);
 
     const today = new Date();
-    const formattedDate = today.toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    const formattedDate = today.toISOString().split("T")[0]; // Format YYYY-MM-DD
     setCurrentDate(formattedDate);
   }, []);
 
@@ -85,17 +87,20 @@ const Depart = (props: Props) => {
 
   const handleSubmit = async () => {
     if (rows.length === 0) {
-      setMessage("Le tableau est vide. Ajoutez des données avant de soumettre.");
+      setMessage(
+        "Le tableau est vide. Ajoutez des données avant de soumettre."
+      );
       setIsError(true);
       return;
     }
 
     try {
-      // Vérifier que toutes les lignes ont un voyant sélectionné
-      for (const index of rows) {
-        if (!selectedVoyants[index]) {
-          throw new Error(`Veuillez sélectionner un voyant pour la ligne ${index + 1}`);
-        }
+      // Vérification que tous les voyants sont sélectionnés
+      const missingVoyants = rows.filter((index) => !selectedVoyants[index]);
+      if (missingVoyants.length > 0) {
+        throw new Error(
+          "Veuillez sélectionner un voyant pour toutes les lignes"
+        );
       }
 
       const dataToSend = {
@@ -103,44 +108,56 @@ const Depart = (props: Props) => {
           const voyantNom = selectedVoyants[index];
           const voyantData = voyants.find((v) => v.nom === voyantNom);
 
+          if (!voyantData) {
+            throw new Error(`Voyant "${voyantNom}" non trouvé`);
+          }
+
           return {
-            salarie: voyantNom,
-            planning: voyantData?.planing || "-",
-            heure: selectedHeures[index] || fields1[0].key, // Valeur par défaut première heure
-            chauffeur: selectedChauffeurs[index] || fields2[0].key, // Valeur par défaut premier chauffeur
-            destination: voyantData?.destination || "-",
-            plateau: voyantData?.plateau || "-",
-            num_tel: voyantData?.num_tel || "-",
+            salarie: voyantData._id, // ID du voyant
+            planning: selectedHeures[index] || fields1[0].key,
+            heure: selectedHeures[index] || fields1[0].key,
+            chauffeur: selectedChauffeurs[index] || fields2[0].key,
+            destination: voyantData.destination,
+            plateau: voyantData.plateau,
+            num_tel: voyantData.num_tel,
           };
         }),
-        date: currentDate,
+        date: currentDate, // Doit être au format YYYY-MM-DD
       };
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/departements`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Si vous avez besoin d'authentification :
-          // 'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(dataToSend),
-      });
+      console.log("Envoi des données:", dataToSend);
+
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/departements`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataToSend),
+        }
+      );
+
+      const result = await response.json();
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erreur lors de l'enregistrement");
+        throw new Error(result.message || "Erreur serveur");
       }
 
-      setMessage("Les données ont été enregistrées avec succès !");
+      setMessage("Départ enregistré avec succès !");
       setIsError(false);
-      
-      // Optionnel: Réinitialiser le formulaire après envoi
-      // setRows([]);
-      // setSelectedVoyants({});
-      // setSelectedHeures({});
-      // setSelectedChauffeurs({});
+
+      // Réinitialisation
+      setTimeout(() => {
+        setRows([]);
+        setSelectedVoyants({});
+        setSelectedHeures({});
+        setSelectedChauffeurs({});
+        setMessage(null);
+      }, 2000);
     } catch (error: any) {
-      setMessage(error.message || "Une erreur est survenue");
+      console.error("Erreur:", error);
+      setMessage(error.message || "Erreur lors de l'enregistrement");
       setIsError(true);
     }
   };
@@ -149,7 +166,8 @@ const Depart = (props: Props) => {
     <>
       <div style={{ paddingTop: 50 }}>
         <p style={{ textAlign: "center", fontSize: 30 }}>
-          Départ <span>{currentDate}</span>
+          Départ{" "}
+          <span>{new Date(currentDate).toLocaleDateString("fr-FR")}</span>
         </p>
         {message && (
           <Alert color={isError ? "danger" : "success"} style={{ margin: 20 }}>
@@ -157,11 +175,7 @@ const Depart = (props: Props) => {
           </Alert>
         )}
         <div style={{ display: "flex", marginLeft: 20, marginBottom: 20 }}>
-          <Button
-            color="primary"
-            onClick={addRow}
-            style={{ marginRight: 10 }}
-          >
+          <Button color="primary" onClick={addRow} style={{ marginRight: 10 }}>
             Ajouter une ligne
           </Button>
           <Button
@@ -215,9 +229,11 @@ const Depart = (props: Props) => {
 
                       <td>{voyantData?.planing || "-"}</td>
                       <td>
-                        <Input 
+                        <Input
                           type="select"
-                          onChange={(e) => handleHeureChange(index, e.target.value)}
+                          onChange={(e) =>
+                            handleHeureChange(index, e.target.value)
+                          }
                           value={selectedHeures[index] || fields1[0].key}
                         >
                           {fields1.map((f) => (
@@ -228,9 +244,11 @@ const Depart = (props: Props) => {
                         </Input>
                       </td>
                       <td>
-                        <Input 
+                        <Input
                           type="select"
-                          onChange={(e) => handleChauffeurChange(index, e.target.value)}
+                          onChange={(e) =>
+                            handleChauffeurChange(index, e.target.value)
+                          }
                           value={selectedChauffeurs[index] || fields2[0].key}
                         >
                           {fields2.map((f) => (

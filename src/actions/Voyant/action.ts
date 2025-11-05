@@ -1,6 +1,6 @@
 import axios from "axios";
 import Voyant from "../../@types/Voyant";
-
+import Departement from "../../@types/Departement";
 
 export function getVoyants(
   query: {
@@ -71,3 +71,71 @@ export function deleteVoyant(voyant: Voyant, callback: () => void) {
       console.error(error);
     });
 }
+
+export const getDepartements = (setData: (data: Departement[]) => void) => {
+  fetch(`${process.env.REACT_APP_API_URL}/departements`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // S'assurer que data est toujours un tableau
+      setData(Array.isArray(data) ? data : []);
+    })
+    .catch((error) => {
+      console.error("Error fetching departements:", error);
+      setData([]); // Retourner un tableau vide en cas d'erreur
+    });
+};
+
+export const getDepartementsByDate = (
+  date: string,
+  setData: (data: Departement[]) => void
+) => {
+  fetch(`${process.env.REACT_APP_API_URL}/departements/date/${date}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      setData(Array.isArray(data) ? data : []);
+    })
+    .catch((error) => {
+      console.error("Error fetching departements by date:", error);
+      setData([]);
+    });
+};
+
+export const deleteDepartement = (id: string, callback: () => void) => {
+  fetch(`${process.env.REACT_APP_API_URL}/departements/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (response.ok) {
+        callback();
+      } else {
+        throw new Error("Erreur lors de la suppression");
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting departement:", error);
+      alert("Erreur lors de la suppression");
+    });
+};
